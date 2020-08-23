@@ -9,3 +9,11 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+*.a
+*.hex
+*.eep
+*.cbp
+*.elf
+.idea
+cmake-build-debug
+out
