@@ -24,7 +24,7 @@ private:
     uint8_t colPos;
     uint8_t rowPos;
 private:
-    inline size_t applyPrint(size_t cnt);
+    size_t applyPrint(size_t cnt);
 //    using LiquidCrystal::print;
 public:
     LCD1602Shield(uint8_t rs, uint8_t enable, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);

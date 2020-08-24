@@ -6,20 +6,20 @@
 
 #define WAIT_TIME (1000 * 5)
 
-QueryValues::QueryValues(LCD1602Shield &lcd, unsigned int defVal, uint8_t maxLen, uint8_t base) :
-        lcd(&lcd), chars(new char[maxLen]), len(maxLen), base(base)
+QueryValues::QueryValues(LCD1602Shield &lcd, unsigned int defVal, const UInt8Range &range, uint8_t base) :
+        lcd(&lcd),
+        range(range),
+        len(getNumCount(range.max)),
+        chars(new char[len]),
+        base(base)
 {
     this->prevBtn = LCD1602Shield::detectButton();
     this->lastTime = millis();
-    for (int8_t idx = maxLen - 1; idx >= 0; idx--) {
-        uint8_t cur = defVal % this->base;
-        defVal /= this->base;
-        setChar(idx, cur);
-    }
+    this->setValue(defVal);
     uint8_t row;
     this->lcd->getCursor(this->startCol, row);
-    this->lcd->print(this->chars, maxLen);
-    this->lcd->setCursor(this->startCol + maxLen - 1, row);
+    this->lcd->print(this->chars, this->len);
+    this->lcd->setCursor(this->startCol + this->len - 1, row);
     this->lcd->showCursor(true);
 }
 
@@ -33,6 +33,21 @@ QueryValues::~QueryValues() {
     this->lcd->print(this->chars, this->len);
     this->lcd->setCursor(this->startCol, row);
     delete [] chars;
+}
+
+uint8_t QueryValues::getNumCount(uint8_t val) {
+    uint8_t res = 1;
+    while (val = val / 10)
+        res++;
+    return res;
+}
+
+void QueryValues::setValue(uint8_t val) {
+    for (int8_t idx = this->len - 1; idx >= 0; idx--) {
+        uint8_t cur = val % this->base;
+        val /= this->base;
+        setChar(idx, cur);
+    }
 }
 
 uint8_t QueryValues::getChar(uint8_t index) {
@@ -109,6 +124,16 @@ LoopResult QueryValues::loop() {
         case BTN_UP:
             this->incChar(col, true);
             break;
+    }
+    uint8_t curVal = this->getCurrentVal();
+    if (curVal < this->range.min || curVal > this->range.max) {
+        if (curVal < this->range.min)
+            curVal = this->range.min;
+        else
+            curVal = this->range.max;
+        this->setValue(curVal);
+        this->lcd->setCursor(this->startCol, row);
+        this->lcd->print(this->chars, this->len);
     }
     this->lcd->setCursor(col, row);
     return LR_PROCESS;
