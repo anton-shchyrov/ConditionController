@@ -14,15 +14,6 @@ enum QueryMode {
 LCD1602Shield lcd(8, 9, 4, 5, 6, 7);
 Settings settings;
 
-const String BUTTON_NAMES[] {
-        "NONE",
-        "UP",
-        "DOWN",
-        "LEFT",
-        "RIGHT",
-        "SELECT"
-};
-
 Buttons prevBtn = BTN_NONE;
 
 //IRrecv recv(13);
@@ -46,11 +37,11 @@ uint8_t getQueryValue() {
 }
 
 void createQuery() {
-    UInt8Range range;
+    UInt8Range range{};
     uint8_t queryVal;
     switch (queryMode) {
         case QM_MIN_TEMP:
-            settings.getMinTempRange(range);
+            Settings::getMinTempRange(range);
             queryVal = settings.getMinTemp();
             break;
         case QM_MAX_TEMP:
@@ -65,7 +56,7 @@ void setup() {
     Serial.begin(9600);
     Serial.println("Test");
     settings.load();
-    byte heart[8] = {
+/*    byte heart[8] = {
             0b00000,
             0b01010,
             0b11111,
@@ -75,8 +66,8 @@ void setup() {
             0b00100,
             0b00000
     };
-//    lcd.createChar(0, heart);
-
+    lcd.createChar(0, heart);
+*/
 //    recv.enableIRIn();
     lcd.begin(16, 2);
 //    lcd.setCursor(1, 2);
@@ -119,25 +110,5 @@ void loop() {
             recv.resume();
         }
     }
-/*  switch (button) {
-    case BTN_UP:
-      printDisplay("UP");
-      break;
-    case BTN_DOWN:
-      printDisplay("DOWN");
-      break;
-    case BTN_LEFT:
-      printDisplay("LEFT");
-      break;
-    case BTN_RIGHT:
-      printDisplay("RIGHT");
-      break;
-    case BTN_SELECT:
-      printDisplay("SELECT");
-      break;
-    default:
-      //printDisplay("Press any key");
-      break;
-  }
 */}
 
