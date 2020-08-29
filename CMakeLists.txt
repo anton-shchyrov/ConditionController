@@ -10,9 +10,9 @@ project(${PROJECT_NAME})
 # Define additional source and header files or default arduino sketch files
 # set(${PROJECT_NAME}_SRCS)
 # set(${PROJECT_NAME}_HDRS)
-include_directories(${PROJECT_SOURCE_DIR})
-file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/*.cpp)
-file(GLOB HDR_FILES ${PROJECT_SOURCE_DIR}/*.h)
+include_directories(${PROJECT_SOURCE_DIR}/src)
+file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB HDR_FILES ${PROJECT_SOURCE_DIR}/src/*.h)
 
 set(${PROJECT_NAME}_SRCS ${SRC_FILES})
 set(${PROJECT_NAME}_HDRS ${HDR_FILES})

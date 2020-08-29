@@ -71,7 +71,7 @@ void setup() {
 //    recv.enableIRIn();
     lcd.begin(16, 2);
 //    lcd.setCursor(1, 2);
-    lcd.print("01234567", "012");
+    lcd.print("012345678", "012");
     uint8_t col, row;
     lcd.getCursor(col, row);
     lcd.print(String(" C:") + col + " R:" + row + " ");
