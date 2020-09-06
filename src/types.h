@@ -12,6 +12,12 @@
 template <typename T> struct Range {
     T min;
     T max;
+    void normalizeValue(T & val) const {
+        if (val < this->min)
+            val = this->min;
+        else if (val > this->max)
+            val = this->max;
+    }
 };
 
 #endif //CONTROLLER_TYPES_H

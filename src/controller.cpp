@@ -2,7 +2,9 @@
 //#include <IRremote.h>
 
 #include "LCD1602Shield.h"
-#include "QueryValues.h"
+#include "CustomQueryValues.h"
+#include "DigitQueryValues.h"
+#include "NumberQueryValues.h"
 #include "Settings.h"
 
 enum QueryMode {
@@ -18,7 +20,7 @@ Buttons prevBtn = BTN_NONE;
 
 //IRrecv recv(13);
 
-QueryValues * query = nullptr;
+CustomQueryValues * query = nullptr;
 QueryMode queryMode = static_cast<QueryMode>(0);
 
 uint8_t getQueryValue() {
@@ -49,7 +51,10 @@ void createQuery() {
             queryVal = settings.getMaxTemp();
             break;
     }
-    query = new QueryValues(lcd, queryVal, range);
+    if (range.max - range.min <= 9)
+        query = new NumberQueryValues(lcd, queryVal, range);
+    else
+        query = new DigitQueryValues(lcd, queryVal, range);
 }
 
 void setup() {
