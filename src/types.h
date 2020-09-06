@@ -9,9 +9,9 @@
 
 #include <stdint.h>
 
-struct UInt8Range {
-    uint8_t min;
-    uint8_t max;
+template <typename T> struct Range {
+    T min;
+    T max;
 };
 
 #endif //CONTROLLER_TYPES_H

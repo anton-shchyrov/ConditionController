@@ -13,19 +13,21 @@
 #define MIN_TEMP_LENGTH 3u
 #define MAX_TEMP_DELTA_LENGTH 3u
 
+#define temp_t uint8_t
+
 class Settings {
 private:
-    uint8_t minTemp : MIN_TEMP_LENGTH;
-    uint8_t maxTempDelta : MAX_TEMP_DELTA_LENGTH;
+    temp_t minTemp : MIN_TEMP_LENGTH;
+    temp_t maxTempDelta : MAX_TEMP_DELTA_LENGTH;
 public:
-    uint8_t getMinTemp() const;
-    void setMinTemp(uint8_t val);
-    uint8_t getMaxTemp() const;
-    void setMaxTemp(uint8_t val);
+    temp_t getMinTemp() const;
+    void setMinTemp(temp_t val);
+    temp_t getMaxTemp() const;
+    void setMaxTemp(temp_t val);
     void load();
     void save() const;
-    static void getMinTempRange(UInt8Range &range);
-    void getMaxTempRange(UInt8Range &range) const;
+    static void getMinTempRange(Range<temp_t> &range);
+    void getMaxTempRange(Range<temp_t> &range) const;
 };
 
 #endif //CONTROLLER_SETTINGS_H

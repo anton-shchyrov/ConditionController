@@ -14,27 +14,35 @@ enum LoopResult {
     LR_TIMEOUT
 };
 
+#define query_t uint8_t
+
 class QueryValues {
 private:
     LCD1602Shield * const lcd;
-    const UInt8Range range;
-    const uint8_t len;
-    char * const chars;
+    const Range<query_t> range;
+    query_t value;
     const uint8_t base;
+    const uint8_t len;
     uint8_t startCol{};
     Buttons prevBtn;
-    unsigned long lastTime;
+    unsigned long lastPressBtnTime;
+    unsigned long lastShowTime;
+    boolean visible;
 private:
-    static uint8_t getNumCount(uint8_t val);
-    void setValue(uint8_t val);
-    uint8_t getChar(uint8_t index);
-    void setChar(uint8_t index, uint8_t value);
+    uint8_t getNumCount(query_t val) const;
+    void printBuffer(char * buf, uint8_t len);
+    void printValue();
+    void hideValue();
+    char * valToChars(char buf[], uint8_t & len, query_t val);
+    static char encodeChar(uint8_t num);
+    static uint8_t decodeChar(char ch);
     void incChar(uint8_t col, bool isInc);
 public:
-    QueryValues(LCD1602Shield & lcd, unsigned int defVal, const UInt8Range &range, uint8_t base = 10);
+    QueryValues(LCD1602Shield & lcd, query_t defVal, const Range<query_t> &range, uint8_t base = 10);
     ~QueryValues();
-    unsigned int getCurrentVal();
+    query_t getCurrentVal() const;
     LoopResult loop();
+//    virtual void test() = 0;
 };
 
 

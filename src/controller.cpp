@@ -37,8 +37,8 @@ uint8_t getQueryValue() {
 }
 
 void createQuery() {
-    UInt8Range range{};
-    uint8_t queryVal;
+    Range<query_t> range{};
+    query_t queryVal;
     switch (queryMode) {
         case QM_MIN_TEMP:
             Settings::getMinTempRange(range);
@@ -71,7 +71,9 @@ void setup() {
 //    recv.enableIRIn();
     lcd.begin(16, 2);
 //    lcd.setCursor(1, 2);
-    lcd.print("012345678", "012");
+    lcd.print("012345678"
+              ""
+              "", "012");
     uint8_t col, row;
     lcd.getCursor(col, row);
     lcd.print(String(" C:") + col + " R:" + row + " ");
