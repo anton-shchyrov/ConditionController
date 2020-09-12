@@ -23,8 +23,8 @@ Buttons prevBtn = BTN_NONE;
 CustomQueryValues * query = nullptr;
 QueryMode queryMode = static_cast<QueryMode>(0);
 
-uint8_t getQueryValue() {
-    uint8_t res = query->getCurrentVal();
+query_t getQueryValue() {
+    query_t res = query->getCurrentVal();
     delete query;
     query = nullptr;
     switch (queryMode) {
@@ -75,13 +75,7 @@ void setup() {
 */
 //    recv.enableIRIn();
     lcd.begin(16, 2);
-//    lcd.setCursor(1, 2);
-    lcd.print("012345678"
-              ""
-              "", "012");
-    uint8_t col, row;
-    lcd.getCursor(col, row);
-    lcd.print(String(" C:") + col + " R:" + row + " ");
+    lcd.print("Ready");
 }
 
 void loop() {

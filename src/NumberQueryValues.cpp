@@ -18,17 +18,14 @@ NumberQueryValues::NumberQueryValues(
 {}
 
 void NumberQueryValues::incValue(bool isInc) {
-    Serial.print(String("Old: ") + this->value);
     if (isInc)
         this->value++;
     else
         this->value--;
-    Serial.print(String(", New: ") + this->value);
     if (this->value < this->range.min)
         this->value = this->range.max;
     else if (this->value > this->range.max)
         this->value = this->range.min;
-    Serial.println(String(", Res: ") + this->value);
     if (this->visible)
         this->printValue();
 }
