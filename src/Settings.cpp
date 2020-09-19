@@ -10,6 +10,8 @@
 #define MAX_MIN_TEMP (BASE_TEMP + MAX_VALUE(MIN_TEMP_LENGTH))
 #define MAX_DELTA MAX_VALUE(MAX_TEMP_DELTA_LENGTH)
 
+Settings::Settings() {}
+
 temp_t Settings::getMinTemp() const {
     return this->minTemp + BASE_TEMP;
 }

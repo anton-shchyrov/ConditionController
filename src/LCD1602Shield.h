@@ -28,6 +28,8 @@ private:
 //    using LiquidCrystal::print;
 public:
     LCD1602Shield(uint8_t rs, uint8_t enable, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
+    LCD1602Shield(const LCD1602Shield&) = delete;
+    LCD1602Shield& operator=(const LCD1602Shield&) = delete;
     void begin(uint8_t cols, uint8_t rows, uint8_t charsize = 0);
     void getCursor(uint8_t & col, uint8_t & row) const;
     void setCursor(uint8_t col, uint8_t row);

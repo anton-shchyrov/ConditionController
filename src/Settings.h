@@ -20,6 +20,9 @@ private:
     temp_t minTemp : MIN_TEMP_LENGTH;
     temp_t maxTempDelta : MAX_TEMP_DELTA_LENGTH;
 public:
+    Settings();
+    Settings(const Settings&) = delete;
+    Settings& operator=(const Settings&) = delete;
     temp_t getMinTemp() const;
     void setMinTemp(temp_t val);
     temp_t getMaxTemp() const;
