@@ -24,7 +24,6 @@ private:
     Buttons prevBtn;
     unsigned long lastPressBtnTime;
 protected:
-    LCD1602Shield * const lcd;
     const Range<query_t> range;
     query_t value;
     const uint8_t base;
@@ -33,7 +32,7 @@ protected:
 private:
     uint8_t getNumCount(query_t val) const;
     uint8_t getCurCol() const;
-    void printBuffer(char * buf, uint8_t len);
+    void printBuffer(char * buf, uint8_t len) const;
     char * valToChars(char buf[], uint8_t & len, query_t val);
     static char encodeChar(uint8_t num);
     static uint8_t decodeChar(char ch);
@@ -43,7 +42,7 @@ protected:
     virtual void doPressButton(Buttons btn) = 0;
     virtual void doBeforeLoop();
 public:
-    CustomQueryValues(LCD1602Shield & lcd, query_t defVal, const Range<query_t> &range, uint8_t base = DEF_BASE);
+    CustomQueryValues(query_t defVal, const Range<query_t> &range, uint8_t base = DEF_BASE);
     virtual ~CustomQueryValues();
     query_t getCurrentVal() const;
     LoopResult loop();

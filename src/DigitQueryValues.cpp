@@ -3,18 +3,18 @@
 //
 
 #include "DigitQueryValues.h"
+#include "globals.h"
 
 DigitQueryValues::DigitQueryValues(
-        LCD1602Shield &lcd,
         query_t defVal,
         const Range<query_t> &range,
         uint8_t base
-) : CustomQueryValues(lcd, defVal, range, base) {
-    this->lcd->showCursor(true);
+) : CustomQueryValues(defVal, range, base) {
+    lcd.showCursor(true);
 }
 
 DigitQueryValues::~DigitQueryValues() {
-    this->lcd->showCursor(false);
+    lcd.showCursor(false);
 }
 
 void DigitQueryValues::incChar(uint8_t col, bool isInc) {
@@ -44,7 +44,7 @@ void DigitQueryValues::incChar(uint8_t col, bool isInc) {
 
 void DigitQueryValues::doPressButton(Buttons btn) {
     uint8_t col, row;
-    this->lcd->getCursor(col, row);
+    lcd.getCursor(col, row);
     switch (btn) {
         case BTN_LEFT:
             if (col <= this->startCol)
@@ -65,5 +65,5 @@ void DigitQueryValues::doPressButton(Buttons btn) {
             this->incChar(col, true);
             break;
     }
-    this->lcd->setCursor(col, row);
+    lcd.setCursor(col, row);
 }

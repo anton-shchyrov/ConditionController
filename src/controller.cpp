@@ -1,11 +1,10 @@
 #include <Arduino.h>
 //#include <IRremote.h>
 
-#include "LCD1602Shield.h"
 #include "CustomQueryValues.h"
 #include "DigitQueryValues.h"
 #include "NumberQueryValues.h"
-#include "Settings.h"
+#include "globals.h"
 
 enum QueryMode {
     QM_MIN_TEMP,
@@ -13,8 +12,8 @@ enum QueryMode {
     QM_UNUSED
 };
 
-LCD1602Shield lcd(8, 9, 4, 5, 6, 7);
-Settings settings;
+//LCD1602Shield lcd(8, 9, 4, 5, 6, 7);
+//Settings settings;
 
 Buttons prevBtn = BTN_NONE;
 
@@ -52,9 +51,9 @@ void createQuery() {
             break;
     }
     if (range.max - range.min <= 9)
-        query = new NumberQueryValues(lcd, queryVal, range);
+        query = new NumberQueryValues(queryVal, range);
     else
-        query = new DigitQueryValues(lcd, queryVal, range);
+        query = new DigitQueryValues(queryVal, range);
 }
 
 void setup() {

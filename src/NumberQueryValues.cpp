@@ -3,16 +3,15 @@
 //
 
 #include "NumberQueryValues.h"
-#include "DigitQueryValues.h"
+#include "globals.h"
 
 #define REFRESH_TIME 500
 
 NumberQueryValues::NumberQueryValues(
-        LCD1602Shield &lcd,
         query_t defVal,
         const Range<query_t> &range,
         uint8_t base
-) : CustomQueryValues(lcd, defVal, range, base),
+) : CustomQueryValues(defVal, range, base),
     lastShowTime(millis()),
     visible(true)
 {}
@@ -35,14 +34,14 @@ void NumberQueryValues::doBeforeLoop() {
     unsigned long curTime = millis();
     if (curTime - this->lastShowTime > REFRESH_TIME) {
         uint8_t r, c;
-        this->lcd->getCursor(c, r);
-        this->lcd->setCursor(this->startCol, r);
+        lcd.getCursor(c, r);
+        lcd.setCursor(this->startCol, r);
         if (this->visible) {
             this->hideValue();
         } else
             this->printValue();
         this->visible = !this->visible;
-        this->lcd->setCursor(c, r);
+        lcd.setCursor(c, r);
         this->lastShowTime = curTime;
     }
 }

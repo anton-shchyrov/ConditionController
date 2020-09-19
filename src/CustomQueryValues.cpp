@@ -3,6 +3,7 @@
 //
 
 #include "CustomQueryValues.h"
+#include "globals.h"
 
 #define MAX_LEN 16
 #define WAIT_TIME (1000 * 5)
@@ -10,12 +11,10 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 CustomQueryValues::CustomQueryValues(
-        LCD1602Shield &lcd,
         query_t defVal,
         const Range<query_t> &range,
         uint8_t base
 ) :
-        lcd(&lcd),
         range(range),
         base(base),
         len(MIN(this->getNumCount(range.max), MAX_LEN)),
@@ -26,15 +25,15 @@ CustomQueryValues::CustomQueryValues(
     this->lastPressBtnTime = millis();
     this->printValue();
     uint8_t col, row;
-    this->lcd->getCursor(col, row);
-    this->lcd->setCursor(this->startCol + this->len - 1, row);
+    lcd.getCursor(col, row);
+    lcd.setCursor(this->startCol + this->len - 1, row);
 }
 
 CustomQueryValues::~CustomQueryValues() {
     this->hideValue();
     uint8_t col, row;
-    this->lcd->getCursor(col, row);
-    this->lcd->setCursor(this->startCol, row);
+    lcd.getCursor(col, row);
+    lcd.setCursor(this->startCol, row);
 }
 
 uint8_t CustomQueryValues::getNumCount(query_t val) const {
@@ -46,17 +45,17 @@ uint8_t CustomQueryValues::getNumCount(query_t val) const {
 
 uint8_t CustomQueryValues::getCurCol() const {
     uint8_t col, row;
-    this->lcd->getCursor(col, row);
+    lcd.getCursor(col, row);
     return col;
 }
 
 
-void CustomQueryValues::printBuffer(char *buf, uint8_t len) {
+void CustomQueryValues::printBuffer(char *buf, uint8_t len) const {
     uint8_t col, row;
-    this->lcd->getCursor(col, row);
-    this->lcd->setCursor(this->startCol, row);
-    this->lcd->print(buf, len);
-    this->lcd->setCursor(col, row);
+    lcd.getCursor(col, row);
+    lcd.setCursor(this->startCol, row);
+    lcd.print(buf, len);
+    lcd.setCursor(col, row);
 }
 
 char * CustomQueryValues::valToChars(char buf[], uint8_t & len, query_t val) {
