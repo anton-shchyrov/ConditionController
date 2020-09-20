@@ -43,12 +43,12 @@ void loop() {
     } else {
         switch (queryData.loop()) {
             case LR_SELECT:
-                Serial.println(String("SELECT ") + queryData.getValue());
+                Serial.println(String("SELECT ") + queryData.done());
                 queryData.nextMode();
                 queryData.init();
                 break;
             case LR_TIMEOUT:
-                Serial.println(String("TIMEOUT ") + queryData.getValue());
+                Serial.println(String("TIMEOUT ") + queryData.done());
                 queryData.resetMode();
                 break;
         }

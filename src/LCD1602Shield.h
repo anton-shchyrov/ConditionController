@@ -8,8 +8,6 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 
-#define _D_PIN_COUNT 4
-
 enum Buttons {
     BTN_NONE,
     BTN_UP,
@@ -31,16 +29,22 @@ public:
     LCD1602Shield(const LCD1602Shield&) = delete;
     LCD1602Shield& operator=(const LCD1602Shield&) = delete;
     void begin(uint8_t cols, uint8_t rows, uint8_t charsize = 0);
+    void clear();
     void getCursor(uint8_t & col, uint8_t & row) const;
     void setCursor(uint8_t col, uint8_t row);
     void showCursor(bool visible);
     void clearLine(uint8_t line);
     void printLine(const String & msg, uint8_t line);
     size_t print(const char *string, int len);
+    size_t print(const char *string);
     size_t print(const String & msg);
     void print(const String & msg1, const String & msg2);
+    void print(const char * msg1, const char * msg2);
     // buttons
     static Buttons detectButton();
+    // inherited
+    using LiquidCrystal::begin;
+    using LiquidCrystal::write;
 };
 
 

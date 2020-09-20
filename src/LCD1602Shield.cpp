@@ -16,6 +16,14 @@ size_t LCD1602Shield::applyPrint(size_t cnt) {
 
 void LCD1602Shield::begin(uint8_t cols, uint8_t rows, uint8_t charsize) {
     LiquidCrystal::begin(cols, rows, charsize);
+    colPos = 0;
+    rowPos = 0;
+}
+
+void LCD1602Shield::clear() {
+    LiquidCrystal::clear();
+    colPos = 0;
+    rowPos = 0;
 }
 
 void LCD1602Shield::getCursor(uint8_t & col, uint8_t & row) const {
@@ -51,11 +59,19 @@ size_t LCD1602Shield::print(const char *string, int len) {
     return applyPrint(LiquidCrystal::write(string, len));
 }
 
+size_t LCD1602Shield::print(const char *string) {
+    return applyPrint(LiquidCrystal::write(string));
+}
+
 size_t LCD1602Shield::print(const String & msg) {
     return applyPrint(LiquidCrystal::print(msg));
 }
 
 void LCD1602Shield::print(const String & msg1, const String & msg2) {
+    print(msg1.c_str(), msg2.c_str());
+}
+
+void LCD1602Shield::print(const char * msg1, const char * msg2) {
     clear();
     print(msg1);
     setCursor(0, 1);

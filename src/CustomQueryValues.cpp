@@ -14,10 +14,18 @@ CustomQueryValues::CustomQueryValues(
         query_t defVal,
         const Range<query_t> &range,
         uint8_t base
+) : CustomQueryValues(defVal, range, nullptr, base) {}
+
+CustomQueryValues::CustomQueryValues(
+        query_t defVal,
+        const Range<query_t> &range,
+        const char * suffix,
+        uint8_t base
 ) :
         range(range),
         base(base),
         len(MIN(this->getNumCount(range.max), MAX_LEN)),
+        suffixLen((suffix != nullptr) ? strlen(suffix) : 0),
         startCol(this->getCurCol())
 {
     this->value = defVal;
@@ -26,11 +34,15 @@ CustomQueryValues::CustomQueryValues(
     this->printValue();
     uint8_t col, row;
     lcd.getCursor(col, row);
+    if (suffix != nullptr) {
+        lcd.setCursor(this->startCol + this->len, row);
+        lcd.print(suffix);
+    }
     lcd.setCursor(this->startCol + this->len - 1, row);
 }
 
 CustomQueryValues::~CustomQueryValues() {
-    this->hideValue();
+    this->hideValue(true);
     uint8_t col, row;
     lcd.getCursor(col, row);
     lcd.setCursor(this->startCol, row);
@@ -90,11 +102,18 @@ void CustomQueryValues::printValue() {
     this->printBuffer(data, len);
 }
 
-void CustomQueryValues::hideValue() {
+void CustomQueryValues::hideValue(bool withSuffix) {
     char buf[MAX_LEN];
-    uint8_t len = MIN(MAX_LEN, this->len);
+    uint8_t len = this->len;
+    if (withSuffix)
+        len += this->suffixLen;
+    len = MIN(MAX_LEN, len);
     memset(buf, ' ', len);
     this->printBuffer(buf, len);
+}
+
+void CustomQueryValues::hideValue() {
+    this->hideValue(false);
 }
 
 void CustomQueryValues::doBeforeLoop() {

@@ -11,7 +11,15 @@ NumberQueryValues::NumberQueryValues(
         query_t defVal,
         const Range<query_t> &range,
         uint8_t base
-) : CustomQueryValues(defVal, range, base),
+) : NumberQueryValues(defVal, range, nullptr, base)
+{}
+
+NumberQueryValues::NumberQueryValues(
+        query_t defVal,
+        const Range<query_t> &range,
+        const char * suffix,
+        uint8_t base
+) : CustomQueryValues(defVal, range, suffix, base),
     lastShowTime(millis()),
     visible(true)
 {}

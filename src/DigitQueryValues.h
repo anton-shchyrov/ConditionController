@@ -13,7 +13,13 @@ private:
 protected:
     void doPressButton(Buttons btn) override;
 public:
-    DigitQueryValues(query_t defVal, const Range<query_t> &range, uint8_t base = DEF_BASE);
+    DigitQueryValues(query_t defVal,
+                     const Range<query_t> &range,
+                     uint8_t base = DEF_BASE);
+    DigitQueryValues(query_t defVal,
+                     const Range<query_t> &range,
+                     const char * suffix,
+                     uint8_t base = DEF_BASE);
     ~DigitQueryValues() override;
 };
 

@@ -19,7 +19,7 @@ private:
     QueryMode queryMode = static_cast<QueryMode>(0);
 public:
     void init();
-    query_t getValue();
+    query_t done();
     inline bool isInitialized() const {
         return this->query != nullptr;
     }

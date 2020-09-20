@@ -17,7 +17,13 @@ protected:
     void doBeforeLoop() override;
     void doPressButton(Buttons btn) override;
 public:
-    NumberQueryValues(query_t defVal, const Range<query_t> &range, uint8_t base = DEF_BASE);
+    NumberQueryValues(query_t defVal,
+                      const Range<query_t> &range,
+                      uint8_t base = DEF_BASE);
+    NumberQueryValues(query_t defVal,
+                      const Range<query_t> &range,
+                      const char * suffix,
+                      uint8_t base = DEF_BASE);
 };
 
 

@@ -28,6 +28,7 @@ protected:
     query_t value;
     const uint8_t base;
     const uint8_t len;
+    const uint8_t suffixLen;
     const uint8_t startCol;
 private:
     uint8_t getNumCount(query_t val) const;
@@ -36,13 +37,20 @@ private:
     char * valToChars(char buf[], uint8_t & len, query_t val);
     static char encodeChar(uint8_t num);
     static uint8_t decodeChar(char ch);
+    void hideValue(bool withSuffix);
 protected:
     void printValue();
     void hideValue();
     virtual void doPressButton(Buttons btn) = 0;
     virtual void doBeforeLoop();
 public:
-    CustomQueryValues(query_t defVal, const Range<query_t> &range, uint8_t base = DEF_BASE);
+    CustomQueryValues(query_t defVal,
+            const Range<query_t> &range,
+            uint8_t base = DEF_BASE);
+    CustomQueryValues(query_t defVal,
+            const Range<query_t> &range,
+            const char * suffix,
+            uint8_t base = DEF_BASE);
     virtual ~CustomQueryValues();
     query_t getCurrentVal() const;
     LoopResult loop();
