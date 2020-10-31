@@ -8,6 +8,11 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 
+#define BRIGHT_OFF 0
+#define BRIGHT_LOW 50
+#define BRIGHT_MIDDLE 100
+#define BRIGHT_HIGH 255
+
 enum Buttons {
     BTN_NONE,
     BTN_UP,
@@ -21,9 +26,11 @@ class LCD1602Shield : private LiquidCrystal {
 private:
     uint8_t colPos;
     uint8_t rowPos;
+    uint8_t prevBrightness;
+    unsigned long lastBtnTime;
 private:
     size_t applyPrint(size_t cnt);
-//    using LiquidCrystal::print;
+    void resetBrightness();
 public:
     LCD1602Shield(uint8_t rs, uint8_t enable, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
     LCD1602Shield(const LCD1602Shield&) = delete;
@@ -40,11 +47,12 @@ public:
     size_t print(const String & msg);
     void print(const String & msg1, const String & msg2);
     void print(const char * msg1, const char * msg2);
+    void print(uint8_t val);
+    void setBrightness(uint8_t val);
     // buttons
-    static Buttons detectButton();
+    Buttons detectButton();
     // inherited
-    using LiquidCrystal::begin;
-    using LiquidCrystal::write;
+    using LiquidCrystal::createChar;
 };
 
 

@@ -16,7 +16,6 @@ enum LoopResult {
 
 #define DEF_BASE 10
 
-//#define query_t uint8_t
 typedef uint8_t query_t;
 
 class CustomQueryValues {

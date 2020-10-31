@@ -6,22 +6,20 @@
 #define CONTROLLER_AIRCONDITIONCONTROLLER_H
 
 #include <IRremote.h>
-#include "globals.h"
+#include "Settings.h"
 
 class AirConditionController {
 private:
     static IRsend send;
+    static bool isPowerOn;
 private:
     inline static void sendCommand(unsigned long command) {
         send.sendNEC(command, 32);
     }
 public:
-    inline static void powerOn() {
-        sendCommand(settings.getOnCommand());
-    }
-    inline static void powerOff() {
-        sendCommand(settings.getOffCommand());
-    }
+    static void powerOn();
+    static void powerOff();
+    static void applyTemperature(temp_t val);
 };
 
 

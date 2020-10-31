@@ -3,3 +3,28 @@
 //
 
 #include "AirConditionController.h"
+#include "globals.h"
+
+IRsend AirConditionController::send;
+bool AirConditionController::isPowerOn = false;
+
+void AirConditionController::powerOn() {
+    if (!isPowerOn) {
+        sendCommand(settings.getOnCommand());
+        isPowerOn = true;
+    }
+}
+
+void AirConditionController::powerOff() {
+    if (!isPowerOn) {
+        sendCommand(settings.getOffCommand());
+        isPowerOn = false;
+    }
+}
+
+void AirConditionController::applyTemperature(temp_t val) {
+    if (val < settings.getMinTemp())
+        powerOff();
+    else if (val > settings.getMaxTemp())
+        powerOn();
+}

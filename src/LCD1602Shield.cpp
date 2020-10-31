@@ -5,8 +5,11 @@
 #include "LCD1602Shield.h"
 
 #define BLANK_LINE "                "  // 16 chars
+#define PIN_BRIGHTNESS 10
+#define STEP_BRIGHTNESS 5000u
 
 LCD1602Shield::LCD1602Shield(uint8_t rs, uint8_t enable, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3) :
+    lastBtnTime(0),
     LiquidCrystal(rs, enable, d0, d1, d2, d3) {}
 
 size_t LCD1602Shield::applyPrint(size_t cnt) {
@@ -14,10 +17,16 @@ size_t LCD1602Shield::applyPrint(size_t cnt) {
     return cnt;
 }
 
+void LCD1602Shield::resetBrightness() {
+    this->lastBtnTime = millis();
+    this->setBrightness(BRIGHT_MIDDLE);
+}
+
 void LCD1602Shield::begin(uint8_t cols, uint8_t rows, uint8_t charsize) {
     LiquidCrystal::begin(cols, rows, charsize);
     colPos = 0;
     rowPos = 0;
+    this->resetBrightness();
 }
 
 void LCD1602Shield::clear() {
@@ -78,26 +87,49 @@ void LCD1602Shield::print(const char * msg1, const char * msg2) {
     print(msg2);
 }
 
+void LCD1602Shield::print(uint8_t val) {
+    applyPrint(write(val));
+}
+
+void LCD1602Shield::setBrightness(uint8_t val) {
+    if (val != this->prevBrightness) {
+        pinMode(PIN_BRIGHTNESS, OUTPUT);
+        analogWrite(PIN_BRIGHTNESS, val);
+        this->prevBrightness = val;
+    }
+}
+
 Buttons LCD1602Shield::detectButton() {
     int keyAnalog =  analogRead(A0);
+    Buttons res;
     if (keyAnalog < 100) {
         // Значение меньше 100 – нажата кнопка right
-        return BTN_RIGHT;
+        res = BTN_RIGHT;
     } else if (keyAnalog < 200) {
         // Значение больше 100 (иначе мы бы вошли в предыдущий блок результата сравнения, но меньше 200 – нажата кнопка UP
-        return BTN_UP;
+        res = BTN_UP;
     } else if (keyAnalog < 400) {
         // Значение больше 200, но меньше 400 – нажата кнопка DOWN
-        return BTN_DOWN;
+        res = BTN_DOWN;
     } else if (keyAnalog < 600) {
         // Значение больше 400, но меньше 600 – нажата кнопка LEFT
-        return BTN_LEFT;
+        res = BTN_LEFT;
     } else if (keyAnalog < 800) {
         // Значение больше 600, но меньше 800 – нажата кнопка SELECT
-        return BTN_SELECT;
+        res = BTN_SELECT;
     } else {
         // Все остальные значения (до 1023) будут означать, что нажатий не было
-        return BTN_NONE;
+        res = BTN_NONE;
     }
+    if (res != BTN_NONE) {
+        this->resetBrightness();
+    } else {
+        unsigned long delta = millis() - this->lastBtnTime;
+        if (delta > STEP_BRIGHTNESS * 2)
+            this->setBrightness(BRIGHT_OFF);
+        else if (delta > STEP_BRIGHTNESS)
+            this->setBrightness(BRIGHT_LOW);
+    }
+    return res;
 }
 

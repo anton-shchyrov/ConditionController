@@ -10,13 +10,16 @@
 Buttons prevBtn = BTN_NONE;
 
 QueryData queryData;
+temp_t prevTemp = 0;
 
 #define IR_PIN 14
+
+#define CHAR_DEG 0
 
 IRrecv recv(IR_PIN);  // pins: SGV
 DoorController door;
 
-uint8_t getCurrentTemp() {
+temp_t getCurrentTemp() {
     return 23;
 }
 
@@ -24,27 +27,23 @@ void setup() {
     Serial.begin(9600);
     Serial.println("Test");
     settings.load();
-/*    byte heart[8] = {
-            0b00000,
-            0b01010,
-            0b11111,
-            0b11111,
-            0b11111,
-            0b01110,
+    byte heart[8] = {
             0b00100,
+            0b01010,
+            0b00100,
+            0b00000,
+            0b00000,
+            0b00000,
+            0b00000,
             0b00000
     };
-    lcd.createChar(0, heart);
-*/
+    lcd.createChar(CHAR_DEG, heart);
+
     recv.enableIRIn();
     lcd.begin(16, 2);
-    lcd.print("Ready");
-    pinMode(10, OUTPUT);
-    analogWrite(10, 50);
+//    lcd.print("Ready");
 
 //    pinMode(IR_PIN, INPUT);
-    if (settings.inTempRange(getCurrentTemp()))
-        AirConditionController::powerOn();
 }
 
 void printRemote(const decode_results & res) {
@@ -95,12 +94,28 @@ void printRemote(const decode_results & res) {
 }
 
 void mainLoop() {
+    temp_t curTemp = getCurrentTemp();
+    if (curTemp != prevTemp) {
+        prevTemp = curTemp;
+        lcd.clear();
+        lcd.printLine(String("Temperature:") + curTemp, 0);
+        lcd.print(static_cast<uint8_t>(CHAR_DEG));
+        lcd.print("C");
+    }
+    switch (door.checkState()) {
+        case DOOR_CLOSED:
+            AirConditionController::applyTemperature(getCurrentTemp());
+            break;
+        case DOOR_OPENED_LONG:
+            AirConditionController::powerOff();
+            break;
+    }
 }
 
 void loop() {
     /**/
     if (!queryData.isInitialized()) {
-        Buttons curBtn = LCD1602Shield::detectButton();
+        Buttons curBtn = lcd.detectButton();
         if (curBtn == BTN_NONE)
             mainLoop();
         if (curBtn != prevBtn) {

@@ -39,10 +39,6 @@ void Settings::setMaxTemp(temp_t val) {
     this->maxTempDelta = val - minTemp - 1;
 }
 
-bool Settings::inTempRange(temp_t val) const {
-    return (val >= this->getMinTemp()) && (val <= this->getMaxTemp());
-}
-
 void Settings::load() {
     this->setMinTemp(23);
     this->setMaxTemp(26);

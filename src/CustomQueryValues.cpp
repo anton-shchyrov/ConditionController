@@ -29,7 +29,7 @@ CustomQueryValues::CustomQueryValues(
         startCol(this->getCurCol())
 {
     this->value = defVal;
-    this->prevBtn = LCD1602Shield::detectButton();
+    this->prevBtn = lcd.detectButton();
     this->lastPressBtnTime = millis();
     this->printValue();
     uint8_t col, row;
@@ -129,7 +129,7 @@ LoopResult CustomQueryValues::loop() {
     unsigned long curTime = millis();
     if (curTime - this->lastPressBtnTime > WAIT_TIME)
         return LR_TIMEOUT;
-    Buttons curBtn = LCD1602Shield::detectButton();
+    Buttons curBtn = lcd.detectButton();
     if (curBtn == this->prevBtn)
         return LR_PROCESS;
     this->prevBtn = curBtn;
