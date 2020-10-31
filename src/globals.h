@@ -9,9 +9,9 @@
 #include "LCD1602Shield.h"
 #include "Settings.h"
 
+#define DEG_STR "\xDF\C"
+
 extern LCD1602Shield lcd;
 extern Settings settings;
-
-
 
 #endif //CONTROLLER_GLOBALS_H

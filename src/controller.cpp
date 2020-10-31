@@ -14,8 +14,6 @@ temp_t prevTemp = 0;
 
 #define IR_PIN 14
 
-#define CHAR_DEG 0
-
 IRrecv recv(IR_PIN);  // pins: SGV
 DoorController door;
 
@@ -27,7 +25,7 @@ void setup() {
     Serial.begin(9600);
     Serial.println("Test");
     settings.load();
-    byte heart[8] = {
+/*    byte heart[8] = {
             0b00100,
             0b01010,
             0b00100,
@@ -38,7 +36,7 @@ void setup() {
             0b00000
     };
     lcd.createChar(CHAR_DEG, heart);
-
+*/
     recv.enableIRIn();
     lcd.begin(16, 2);
 //    lcd.print("Ready");
@@ -98,9 +96,7 @@ void mainLoop() {
     if (curTemp != prevTemp) {
         prevTemp = curTemp;
         lcd.clear();
-        lcd.printLine(String("Temperature:") + curTemp, 0);
-        lcd.print(static_cast<uint8_t>(CHAR_DEG));
-        lcd.print("C");
+        lcd.printLine(String("Temperature:") + curTemp + DEG_STR, 0);
     }
     switch (door.checkState()) {
         case DOOR_CLOSED:
@@ -120,8 +116,10 @@ void loop() {
             mainLoop();
         if (curBtn != prevBtn) {
             prevBtn = curBtn;
-            if (curBtn == BTN_SELECT)
+            if (curBtn == BTN_SELECT) {
                 queryData.init();
+                prevTemp = 0;
+            }
         }
     } else {
         switch (queryData.loop()) {

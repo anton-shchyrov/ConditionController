@@ -6,7 +6,7 @@
 
 #define BLANK_LINE "                "  // 16 chars
 #define PIN_BRIGHTNESS 10
-#define STEP_BRIGHTNESS 5000u
+#define BRIGHTNESS_TIMEOUT 5000u
 
 LCD1602Shield::LCD1602Shield(uint8_t rs, uint8_t enable, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3) :
     lastBtnTime(0),
@@ -125,10 +125,8 @@ Buttons LCD1602Shield::detectButton() {
         this->resetBrightness();
     } else {
         unsigned long delta = millis() - this->lastBtnTime;
-        if (delta > STEP_BRIGHTNESS * 2)
+        if (delta > BRIGHTNESS_TIMEOUT)
             this->setBrightness(BRIGHT_OFF);
-        else if (delta > STEP_BRIGHTNESS)
-            this->setBrightness(BRIGHT_LOW);
     }
     return res;
 }

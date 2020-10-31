@@ -7,9 +7,6 @@
 #include "NumberQueryValues.h"
 #include "DigitQueryValues.h"
 
-#define DEG_STR "\xDF"
-//#define DEG_STR "+"
-
 void QueryData::init() {
     Serial.println(DEG_STR);
     if (this->isInitialized())
