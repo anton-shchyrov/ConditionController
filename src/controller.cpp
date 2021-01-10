@@ -6,6 +6,7 @@
 #include "QueryData.h"
 #include "DoorController.h"
 #include "AirConditionController.h"
+#include "TemperatureController.h"
 
 Buttons prevBtn = BTN_NONE;
 
@@ -13,9 +14,11 @@ QueryData queryData;
 temp_t prevTemp = 0;
 
 #define IR_PIN 14
+#define TEMP_PIN 15
 
 IRrecv recv(IR_PIN);  // pins: SGV
 DoorController door;
+TemperatureController tc(TEMP_PIN);
 
 temp_t getCurrentTemp() {
     return 23;
@@ -39,6 +42,7 @@ void setup() {
 */
     recv.enableIRIn();
     lcd.begin(16, 2);
+    tc.Init();
 //    lcd.print("Ready");
 
 //    pinMode(IR_PIN, INPUT);
