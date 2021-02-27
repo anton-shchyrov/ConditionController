@@ -37,13 +37,6 @@ void TemperatureController::setResolution(const byte * addr, byte resolution) {
     driver.write(0x48);         // Copy Scratchpad
 }
 
-void TemperatureController::convertCommand(const byte * addr) {
-    sendCommand(addr, 0x44);
-//    driver.reset();
-//    driver.select(addr);
-//    driver.write(0x44,1);         // start conversion, with parasite power on at the end
-}
-
 void TemperatureController::begin(uint8_t pin) {
     this->driver.begin(pin);
 }
@@ -53,14 +46,6 @@ bool TemperatureController::search(byte * addr) {
         Serial.println("Temperature sensor not found");
         return false;
     }
-    Serial.print("Addr: ");
-    for (int8_t i = 0; i < 8; i++) {
-        if (addr[i] < 16)
-            Serial.print('0');
-        Serial.print(addr[i], HEX);
-    }
-    Serial.println();
-
     if (!checkCrc(addr, 7)) {
         Serial.println("CRC is not valid!");
         return false;
@@ -74,7 +59,6 @@ bool TemperatureController::search(byte * addr) {
             Serial.println("Unknown device");
             return false;
     }
-
     return true;
 }
 
@@ -117,8 +101,8 @@ float TemperatureController::readTemp(const byte * addr) {
         }
     }
     float celsius = static_cast<float>(raw) / 16.0f;
-    Serial.print("Temp (C): ");
-    Serial.println(celsius);
+//    Serial.print("Temp (C): ");
+//    Serial.println(celsius);
     return celsius;
 }
 

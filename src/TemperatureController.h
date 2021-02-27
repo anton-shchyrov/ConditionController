@@ -16,13 +16,12 @@ private:
         return OneWire::crc8(data, len) == data[len];
     }
     void setResolution(const byte * addr, byte resolution);
-    void convertCommand(const byte * addr);
 public:
     virtual void begin(uint8_t pin);
     bool search(byte * addr);
     inline void queryTemperature(const byte * addr, byte resolution) {
         setResolution(addr, resolution);
-        convertCommand(addr);
+        sendCommand(addr, 0x44);  // convertCommand
     }
     float readTemp(const byte * addr);
     inline virtual bool ready() {

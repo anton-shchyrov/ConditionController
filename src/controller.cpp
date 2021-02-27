@@ -16,6 +16,8 @@ temp_t prevTemp = 0;
 #define IR_PIN 13  // pins: SGV
 #define TEMP_PIN 12
 
+#define DEFAULT_TEMP_RESOLUTION 12
+
 DoorController door;
 SingleTemperatureController tc;
 
@@ -40,7 +42,7 @@ void setup() {
 //    pinMode(TEMP_PIN, OUTPUT);
 //    digitalWrite(TEMP_PIN, LOW);
     tc.begin(TEMP_PIN);
-    tc.queryTemperature(12);
+    tc.queryTemperature(DEFAULT_TEMP_RESOLUTION);
     lcd.print("Ready");
 
 //    pinMode(IR_PIN, INPUT);
@@ -62,7 +64,7 @@ void printRemote(const IRData & res) {
 void mainLoop() {
     if (tc.ready()) {
         float curTemp = tc.readTemp();
-        tc.queryTemperature(12);
+        tc.queryTemperature(DEFAULT_TEMP_RESOLUTION);
         temp_t curTempI = round(curTemp);
         if (curTempI != prevTemp) {
             prevTemp = curTempI;
@@ -75,7 +77,8 @@ void mainLoop() {
     }
     switch (door.checkState()) {
         case DOOR_CLOSED:
-            AirConditionController::applyTemperature(prevTemp);
+            if (prevTemp > 0)
+                AirConditionController::applyTemperature(prevTemp);
             break;
         case DOOR_OPENED_LONG:
             AirConditionController::powerOff();
