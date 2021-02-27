@@ -17,11 +17,7 @@ temp_t prevTemp = 0;
 #define TEMP_PIN 12
 
 DoorController door;
-TemperatureController tc(TEMP_PIN);
-
-temp_t getCurrentTemp() {
-    return 23;
-}
+SingleTemperatureController tc;
 
 void setup() {
     Serial.begin(9600);
@@ -41,7 +37,10 @@ void setup() {
 */
     IrReceiver.begin(IR_PIN, DISABLE_LED_FEEDBACK);
     lcd.begin(16, 2);
-    tc.begin();
+//    pinMode(TEMP_PIN, OUTPUT);
+//    digitalWrite(TEMP_PIN, LOW);
+    tc.begin(TEMP_PIN);
+    tc.queryTemperature(12);
     lcd.print("Ready");
 
 //    pinMode(IR_PIN, INPUT);
@@ -61,15 +60,22 @@ void printRemote(const IRData & res) {
 }
 
 void mainLoop() {
-    temp_t curTemp = getCurrentTemp();
-    if (curTemp != prevTemp) {
-        prevTemp = curTemp;
-        lcd.clear();
-        lcd.printLine(String("Temperature:") + curTemp + DEG_STR, 0);
+    if (tc.ready()) {
+        float curTemp = tc.readTemp();
+        tc.queryTemperature(12);
+        temp_t curTempI = round(curTemp);
+        if (curTempI != prevTemp) {
+            prevTemp = curTempI;
+            lcd.clear();
+            lcd.print(
+                "Temperature:",
+                String("      ") + curTemp + DEG_STR
+                );
+        }
     }
     switch (door.checkState()) {
         case DOOR_CLOSED:
-            AirConditionController::applyTemperature(getCurrentTemp());
+            AirConditionController::applyTemperature(prevTemp);
             break;
         case DOOR_OPENED_LONG:
             AirConditionController::powerOff();

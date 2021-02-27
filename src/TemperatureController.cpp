@@ -8,14 +8,47 @@
 #define DS1822  0x22
 #define DS18B20 0x28
 
-TemperatureController::TemperatureController(uint8_t pin) : driver(pin) {}
+#define CMD_CONVERT_T        0x44
+#define CMD_SCRATCHPAD_COPY  0x48
+#define CMD_SCRATCHPAD_WRITE 0x4E
 
-void TemperatureController::QueryTemperature() {
-
+void TemperatureController::sendCommand(const byte * addr, byte command) {
+    driver.reset();
+    driver.select(addr);
+    driver.write(command);
 }
 
-bool TemperatureController::begin() {
-    uint8_t addr[8];
+void TemperatureController::setResolution(const byte * addr, byte resolution) {
+    // Get byte for desired resolution
+    uint8_t resbyte;
+    switch (resolution) {
+        case 12: resbyte = 0x7F; break;
+        case 11: resbyte = 0x5F; break;
+        case 10: resbyte = 0x3F; break;
+        default:
+            resbyte = 0x1F;
+    }
+    // Set configuration
+    sendCommand(addr, 0x4E);  // Write scratchpad
+    driver.write(0);            // TL
+    driver.write(0);            // TH
+    driver.write(resbyte);         // Configuration Register
+
+    driver.write(0x48);         // Copy Scratchpad
+}
+
+void TemperatureController::convertCommand(const byte * addr) {
+    sendCommand(addr, 0x44);
+//    driver.reset();
+//    driver.select(addr);
+//    driver.write(0x44,1);         // start conversion, with parasite power on at the end
+}
+
+void TemperatureController::begin(uint8_t pin) {
+    this->driver.begin(pin);
+}
+
+bool TemperatureController::search(byte * addr) {
     if (!this->driver.search(addr)) {
         Serial.println("Temperature sensor not found");
         return false;
@@ -28,7 +61,7 @@ bool TemperatureController::begin() {
     }
     Serial.println();
 
-    if (OneWire::crc8(addr, 7) != addr[7]) {
+    if (!checkCrc(addr, 7)) {
         Serial.println("CRC is not valid!");
         return false;
     }
@@ -42,123 +75,54 @@ bool TemperatureController::begin() {
             return false;
     }
 
-    this->driver.reset();
-    this->driver.select(addr);
-    Serial.println("Wait temperature");
     return true;
 }
-/*
-void handleOWIO(byte pin, byte resolution) {
-    int owpin = pin;
 
-// Device identifier
-    byte dsaddr[8];
-    OneWire myds(owpin);
-    Serial.println(getdstemp(myds, dsaddr, resolution));
-
-} // run OW sequence
-
-float getdstemp(OneWire myds, byte addr[8], byte resolution) {
-    byte present = 0;
-    int i;
-    byte data[12];
+float TemperatureController::readTemp(const byte * addr) {
+    byte data[9];
     byte type_s;
-    float celsius;
-    float fahrenheit;
 
     switch (addr[0]) {
-        case 0x10:
-//Serial.println(F("  Chip = DS18S20"));  // or old DS1820
-            type_s = 1;
-            break;
-        case 0x28:
-//Serial.println(F("  Chip = DS18B20"));
-            type_s = 0;
-            break;
-        case 0x22:
-//Serial.println(F("  Chip = DS1822"));
-            type_s = 0;
-            break;
+        case DS18S20: type_s = 1; break;
+        case DS1822:
+        case DS18B20: type_s = 0; break;
         default:
-            Serial.println(F("Device is not a DS18x20 family device."));
+            Serial.println("Device is not a DS18x20 family device.");
     }
 
-// Get byte for desired resolution
-    uint8_t resbyte;
-    switch (resolution) {
-        case 12:
-            resbyte = 0x7F;
-            break;
-        case 11:
-            resbyte = 0x5F;
-            break;
-        case 10:
-            resbyte = 0x3F;
-            break;
-        default:
-            resbyte = 0x1F;
+    sendCommand(addr, 0xBE);         // Read Scratchpad
+
+    // Raw Scratchpad Data
+    for (int i = 0; i < 9; i++) {           // we need 9 bytes
+        data[i] = driver.read();
     }
-// Set configuration
-//    myds.reset();
-//    myds.select(addr);
-    myds.write(0x4E);         // Write scratchpad
-    myds.write(0);            // TL
-    myds.write(0);            // TH
-    myds.write(resbyte);         // Configuration Register
+    if (!checkCrc(data, 8))
+        return -1;
 
-    myds.write(0x48);         // Copy Scratchpad
-
-//    myds.reset();
-//    myds.select(addr);
-
-    long starttime = millis();
-    myds.write(0x44);         // start conversion, with parasite power on at the end
-    while (!myds.read()) {
-// do nothing
-    }
-    Serial.print("Conversion took: ");
-    Serial.print(millis() - starttime);
-    Serial.println(" ms");
-
-//delay(1000);     // maybe 750ms is enough, maybe not
-// we might do a ds.depower() here, but the reset will take care of it.
-
-    present = myds.reset();
-    myds.select(addr);
-    myds.write(0xBE);         // Read Scratchpad
-
-//Serial.print("  Data = ");
-//Serial.print(present,HEX);
-    Serial.println("Raw Scratchpad Data: ");
-    for ( i = 0; i < 9; i++) {           // we need 9 bytes
-        data[i] = myds.read();
-        Serial.print(data[i], HEX);
-        Serial.print(" ");
-    }
-//Serial.print(" CRC=");
-//Serial.print(OneWire::crc8(data, 8), HEX);
-    Serial.println();
-
-// convert the data to actual temperature
-
-    unsigned int raw = (data[1] << 8) | data[0];
+    // convert the data to actual temperature
+    unsigned int raw = (data[1] << 8u) | data[0];
     if (type_s) {
-        raw = raw << 3; // 9 bit resolution default
+        raw = raw << 3u; // 9 bit resolution default
         if (data[7] == 0x10) {
-// count remain gives full 12 bit resolution
-            raw = (raw & 0xFFF0) + 12 - data[6];
+            // count remain gives full 12 bit resolution
+            raw = (raw & 0xFFF0u) + 12 - data[6];
         } else {
-            byte cfg = (data[4] & 0x60);
-            if (cfg == 0x00) raw = raw << 3;  // 9 bit resolution, 93.75 ms
-            else if (cfg == 0x20) raw = raw << 2; // 10 bit res, 187.5 ms
-            else if (cfg == 0x40) raw = raw << 1; // 11 bit res, 375 ms
-// default is 12 bit resolution, 750 ms conversion time
+            byte cfg = (data[4] & 0x60u);
+            switch (cfg) {
+                case 0x00: raw = raw << 3u; break;  // 9 bit resolution, 93.75 ms
+                case 0x20: raw = raw << 2u; break;  // 10 bit res, 187.5 ms
+                case 0x40: raw = raw << 1u; break;  // 11 bit res, 375 ms
+                // default is 12 bit resolution, 750 ms conversion time
+            }
         }
     }
-    celsius = (float)raw / 16.0;
-    fahrenheit = celsius * 1.8 + 32.0;
+    float celsius = static_cast<float>(raw) / 16.0f;
     Serial.print("Temp (C): ");
-//Serial.println(celsius);
+    Serial.println(celsius);
     return celsius;
 }
-*/
+
+void SingleTemperatureController::begin(uint8_t pin) {
+    TemperatureController::begin(pin);
+    initialized = search(addr);
+}
