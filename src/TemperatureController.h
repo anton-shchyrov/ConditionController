@@ -14,7 +14,7 @@ private:
     void QueryTemperature();
 public:
     TemperatureController(uint8_t pin);
-    bool Init();
+    bool begin();
 };
 
 

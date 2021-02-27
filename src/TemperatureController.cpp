@@ -14,7 +14,7 @@ void TemperatureController::QueryTemperature() {
 
 }
 
-bool TemperatureController::Init() {
+bool TemperatureController::begin() {
     uint8_t addr[8];
     if (!this->driver.search(addr)) {
         Serial.println("Temperature sensor not found");
@@ -47,7 +47,7 @@ bool TemperatureController::Init() {
     Serial.println("Wait temperature");
     return true;
 }
-
+/*
 void handleOWIO(byte pin, byte resolution) {
     int owpin = pin;
 
@@ -161,3 +161,4 @@ float getdstemp(OneWire myds, byte addr[8], byte resolution) {
 //Serial.println(celsius);
     return celsius;
 }
+*/

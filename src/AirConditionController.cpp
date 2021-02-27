@@ -5,7 +5,6 @@
 #include "AirConditionController.h"
 #include "globals.h"
 
-IRsend AirConditionController::send;
 bool AirConditionController::isPowerOn = false;
 
 void AirConditionController::powerOn() {

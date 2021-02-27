@@ -5,16 +5,15 @@
 #ifndef CONTROLLER_AIRCONDITIONCONTROLLER_H
 #define CONTROLLER_AIRCONDITIONCONTROLLER_H
 
-#include <IRremote.h>
+#include <IRremoteInt.h>
 #include "Settings.h"
 
 class AirConditionController {
 private:
-    static IRsend send;
     static bool isPowerOn;
 private:
     inline static void sendCommand(unsigned long command) {
-        send.sendNEC(command, 32);
+        IrSender.sendNEC(command, 32, 1);
     }
 public:
     static void powerOn();
